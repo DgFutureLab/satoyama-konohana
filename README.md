@@ -1,7 +1,7 @@
 satoyama-konohana
 =================
 
-Command line tool for managing Satoyama objects
+Command line tool for easily managing satoyama-networks
 
 # Usage
 Get a list of all sites in the database:
