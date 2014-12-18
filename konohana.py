@@ -31,23 +31,46 @@ class Konohana(object):
 	# 	print'ADSASD'
 
 	@staticmethod
-	def nodes(**kwargs):
-		r = requests.get('%snodes'%URL)
-		nodes = json.loads(r.text)['objects']
-		pprint(map(lambda n: {'id': n['id'], 'alias':n['alias'], 'sensors': len(n['sensors'])}, nodes))
+	def sites(**kwargs):
+		r = requests.get(URL + 'sites')
+		sites = json.loads(r.text)['objects']
+		pprint(map(lambda s: 'id: %s, alias: %s, nodes: %s'%(s['id'], s['alias'], len(s['nodes'])), sites))
+
 
 	@staticmethod
-	def sites(**kwargs):
-		r = requests.get('%snodes'%URL)
-		sites = json.loads(r.text)['objects']
-		pprint(map(lambda s: {'id': s['id'], 'alias': s['alias'], 'nodes': len(s['nodes'])}, sites))
+	def nodes(**kwargs):
+		r = requests.get(URL + 'nodes')
+		nodes = json.loads(r.text)['objects']
+		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s'%(n['id'], ['alias'], len(n['sensors'])), nodes))
 
+	
 	@staticmethod
 	def create_node(alias, node_type, short_address, site = None, **kwargs):
-		print'ADSASD'
-		print alias
-		print node_type
-		print short_address
+		
+		if kwargs.has_key('longitude'):
+			longitude = kwargs['longitude']
+		else:
+			longitude = None
+
+		if kwargs.has_key('latitude'):
+			latitude = kwargs['latitude']
+		else:
+			latitude = None
+
+		data = {'alias' : alias, 'node_type': node_type, 'site_id': site, 'longitude': longitude}
+		
+		try:
+			r = requests.post(URL + 'node', data = data)
+		except requests.ConnectionError:
+			print 'Could not connect to server. Exitting...'
+			os._exit(1)
+		
+		if not r.ok:
+			print r
+		else:
+			response = json.loads(r.text)
+			print 'created node:'
+			print response['objects'][0]
 
 
 
