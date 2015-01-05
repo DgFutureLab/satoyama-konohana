@@ -65,16 +65,20 @@ class Konohana(object):
 	
 	@staticmethod
 	def create_node(**kwargs):
-		
-		kwargs.update({'site_id': kwargs['site']})
-		r = requests.post(URL + 'node', data = kwargs)
+		fields = ['alias', 'node_type', 'site', 'latitude', 'longitude']
+		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
+		node_fields.update({'site_id': kwargs['site']})
+		print node_fields
+		r = requests.post(URL + 'node', data = node_fields)
+	
 		
 		if not r.ok:
 			print r
 		else:
 			response = json.loads(r.text)
-			logger.info('created node')
-			pprint(response['objects'][0])
+			print r.text
+			# logger.info('created node')
+			# pprint(response['objects'][0])
 
 
 
@@ -107,7 +111,7 @@ if __name__ == "__main__":
 	parser_create_node = subparsers.add_parser('create_node', help='Create a site or node')
 	parser_create_node.add_argument('--alias', type = str, help = 'The name of the node (e.g. "ricefield_small_waterlevel")', required = False)
 	parser_create_node.add_argument('--node_type', '-nt', choices = NODE_TYPES, required = True)
-	parser_create_node.add_argument('--short_address', '-sa', type = int, help = 'The Chibi short adress of the node. If not specified a free address will be asigned to the node.', required = False)
+	# parser_create_node.add_argument('--short_address', '-sa', type = int, help = 'The Chibi short adress of the node. If not specified a free address will be asigned to the node.', required = False)
 	parser_create_node.add_argument('--site', '-s', type = int, help = 'The id of the site that the node belongs to', required = True)
 	parser_create_node.add_argument('--latitude', '-ltt', type = float, help = 'The latitude of the node', required = False)
 	parser_create_node.add_argument('--longitude', '-lgt', type = float, help = 'The latitude of the node', required = False)
@@ -144,7 +148,7 @@ if __name__ == "__main__":
 
 	URL = 'http://%s:%s/'%(HOST, PORT)
 
-	print vars(args)
+	# print vars(args)
 	getattr(Konohana, args.action)(**vars(args))
 
 	# print action, model
