@@ -64,19 +64,10 @@ class Konohana(object):
 
 	
 	@staticmethod
-	def create_node(alias, node_type, short_address = None, site = None, **kwargs):
+	def create_node(**kwargs):
 		
-		if kwargs.has_key('longitude'): longitude = kwargs['longitude']
-		else: longitude = None
-
-		if kwargs.has_key('latitude'): latitude = kwargs['latitude']
-		else: latitude = None
-
-		if kwargs.has_key('short_address'): short_address = kwargs['short_address']
-		else: short_address = None
-
-		data = {'alias' : alias, 'node_type': node_type, 'site_id': site, 'longitude': longitude, 'latitude': latitude, 'short_address' : short_address}
-		r = requests.post(URL + 'node', data = data)
+		kwargs.update({'site_id': kwargs['site']})
+		r = requests.post(URL + 'node', data = kwargs)
 		
 		if not r.ok:
 			print r
@@ -97,8 +88,10 @@ if __name__ == "__main__":
 	### Main parser
 	###
 	parser.add_argument('-y', action='store_true', help='If specified, Konohana will not ask for confirmation when destroying Satoyama entities.')
-	parser.add_argument('--host', help = 'Server IP address e.g., 107.170.251.142', default = '128.199.191.249')
-	parser.add_argument('--port', help = 'Port on the server (usually 80)', default = 80)
+	# parser.add_argument('--host', help = 'Server IP address e.g., 107.170.251.142', default = '128.199.191.249')
+	# parser.add_argument('--port', help = 'Port on the server (usually 80)', default = 80)
+	parser.add_argument('--host', help = 'Server IP address e.g., 107.170.251.142', default = '127.0.0.1')
+	parser.add_argument('--port', help = 'Port on the server (usually 80)', default = 8080)
 	subparsers = parser.add_subparsers(help='sub-command help', dest = 'action')
 
 	
@@ -112,12 +105,12 @@ if __name__ == "__main__":
 	### Subparser for create node
 	###
 	parser_create_node = subparsers.add_parser('create_node', help='Create a site or node')
-	parser_create_node.add_argument('alias', type = str, help = 'The name of the node (e.g. "ricefield_small_waterlevel")')
-	parser_create_node.add_argument('--node_type', '-t', choices = NODE_TYPES, required = True)
-	parser_create_node.add_argument('--short_address', '-a', type = int, help = 'The Chibi short adress of the node', required = False)
+	parser_create_node.add_argument('--alias', type = str, help = 'The name of the node (e.g. "ricefield_small_waterlevel")', required = False)
+	parser_create_node.add_argument('--node_type', '-nt', choices = NODE_TYPES, required = True)
+	parser_create_node.add_argument('--short_address', '-sa', type = int, help = 'The Chibi short adress of the node. If not specified a free address will be asigned to the node.', required = False)
 	parser_create_node.add_argument('--site', '-s', type = int, help = 'The id of the site that the node belongs to', required = True)
-	parser_create_node.add_argument('--latitude', type = float, help = 'The latitude of the node', required = False)
-	parser_create_node.add_argument('--longitude', type = float, help = 'The latitude of the node', required = False)
+	parser_create_node.add_argument('--latitude', '-ltt', type = float, help = 'The latitude of the node', required = False)
+	parser_create_node.add_argument('--longitude', '-lgt', type = float, help = 'The latitude of the node', required = False)
 
 	###
 	### Subparser for destroy node
