@@ -77,9 +77,9 @@ class Konohana(object):
 	@staticmethod
 	@dispatch_request
 	def create_node(**kwargs):
-		fields = ['alias', 'node_type', 'site', 'latitude', 'longitude']
+		fields = ['alias', 'node_type', 'site_id', 'latitude', 'longitude']
 		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
-		node_fields.update({'site_id': kwargs['site']})
+		# node_fields.update({'site_id': kwargs['site']})
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
 		if len(api_response.get('errors', [])) == 0: 
 			logger.info('Node created!')
@@ -166,7 +166,7 @@ if __name__ == "__main__":
 	###
 	parser_create_node = subparsers.add_parser('create_node', help='Create a site or node')
 	parser_create_node.add_argument('--node_type', '-nt', choices = NODE_TYPES, required = True)
-	parser_create_node.add_argument('--site', '-s', type = int, required = True, help = 'The id of the site that the node belongs to')
+	parser_create_node.add_argument('--site_id', '-s', type = int, required = True, help = 'The id of the site that the node belongs to')
 	parser_create_node.add_argument('--alias', type = str, required = False, help = 'The name of the node (e.g. "ricefield_small_waterlevel")')
 	parser_create_node.add_argument('--latitude', '-ltt', required = False, type = float, help = 'The latitude of the node')
 	parser_create_node.add_argument('--longitude', '-lgt', required = False, type = float, help = 'The latitude of the node')
