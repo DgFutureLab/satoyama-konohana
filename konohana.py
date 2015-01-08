@@ -77,8 +77,7 @@ class Konohana(object):
 	@staticmethod
 	@dispatch_request
 	def create_node(**kwargs):
-		fields = ['alias', 'node_type', 'site_id', 'latitude', 'longitude']
-		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
+		
 		# node_fields.update({'site_id': kwargs['site']})
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
 		if len(api_response.get('errors', [])) == 0: 
@@ -103,13 +102,15 @@ class Konohana(object):
 	@staticmethod
 	@dispatch_request
 	def create_site(**kwargs):
-
+		fields = ['alias']
+		site_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
+		print site_fields
 		if kwargs.get('nodes', None):
 			nodes = kwargs['nodes']
 			l = [z.split(':') for z in nodes.split(',')]
 			node_dict = dict(zip([x[0] for x in l], [x[1] for x in l]))
 		
-		api_response = Konohana.handle_response(requests.post(URL + 'site'))
+		api_response = Konohana.handle_response(requests.post(URL + 'site', data = site_fields))
 
 		if len(api_response.get('errors', [])) == 0: 
 			logger.info('Site created!')
