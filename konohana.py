@@ -103,7 +103,8 @@ class Konohana(object):
 	@staticmethod
 	@dispatch_request
 	def create_site(**kwargs):
-		if kwargs.has_key('nodes'):
+
+		if kwargs.get('nodes', None):
 			nodes = kwargs['nodes']
 			l = [z.split(':') for z in nodes.split(',')]
 			node_dict = dict(zip([x[0] for x in l], [x[1] for x in l]))
@@ -119,7 +120,7 @@ class Konohana(object):
 			for e in api_response['errors']: logger.error('%s'%e)
 			site_id = None
 		
-		if site_id and kwargs.has_key('nodes'):
+		if site_id and kwargs.get('nodes', None):
 			for node_type, n_nodes in node_dict.items():
 				for i in xrange(int(n_nodes)):
 					Konohana.create_node(site = site_id, node_type = node_type)
@@ -150,8 +151,8 @@ if __name__ == "__main__":
 	### Main parser
 	###
 	parser.add_argument('-y', action='store_true', help='If specified, Konohana will not ask for confirmation when destroying Satoyama entities.')
-	parser.add_argument('--host', help = 'Server IP address e.g., 107.170.251.142', default = '127.0.0.1')
-	parser.add_argument('--port', help = 'Port on the server (usually 80)', default = 8080)
+	parser.add_argument('--host', default = '127.0.0.1', help = 'Server IP address e.g., 107.170.251.142')
+	parser.add_argument('--port', type = int, default = 8080, help = 'Port on the server (usually 80)')
 	subparsers = parser.add_subparsers(help='sub-command help', dest = 'action')
 
 	
