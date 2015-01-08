@@ -13,14 +13,14 @@ Satoyama-konohana is a command line tool for easily managing satoyama-networks. 
 # Usage
 To get an overview of the tool, run it with the --help flag:
 
-  $python konohana.py --help
+  `$python konohana.py --help`
   
 Get a list of all sites in the database:
 
-  $ python konohana.py sites
+  `$ python konohana.py sites`
 
 Get a list of all nodes in the database:
 
-  $ python konohana.py nodes
+  `$ python konohana.py nodes`
   
 Create a new 
