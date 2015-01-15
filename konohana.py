@@ -63,7 +63,8 @@ class Konohana(object):
 	def sites(**kwargs):
 		r = requests.get(URL + 'sites')
 		sites = json.loads(r.text)['objects']
-		pprint(map(lambda s: 'id: %s, alias: %s, nodes: %s'%(s['id'], s['alias'], len(s['nodes'])), sites))
+		# pprint(sites)
+		pprint(map(lambda s: 'id: %s, alias: %s, nodes: %s\n'%(s['id'], s['alias'], len(s['nodes'])), sites))
 
 
 	@staticmethod
@@ -71,14 +72,16 @@ class Konohana(object):
 	def nodes(**kwargs):
 		r = requests.get(URL + 'nodes')
 		nodes = json.loads(r.text)['objects']
-		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s'%(n['id'], ['alias'], len(n['sensors'])), nodes))
+		# pprint(nodes)
+		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s\n'%(n['id'], ['alias'], len(n['sensors'])), nodes))
 
 	
 	@staticmethod
 	@dispatch_request
 	def create_node(**kwargs):
-		
-		# node_fields.update({'site_id': kwargs['site']})
+		fields = ['alias', 'site_id', 'node_type']
+		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
+		print node_fields
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
 		if len(api_response.get('errors', [])) == 0: 
 			logger.info('Node created!')
@@ -104,7 +107,6 @@ class Konohana(object):
 	def create_site(**kwargs):
 		fields = ['alias']
 		site_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
-		print site_fields
 		if kwargs.get('nodes', None):
 			nodes = kwargs['nodes']
 			l = [z.split(':') for z in nodes.split(',')]
