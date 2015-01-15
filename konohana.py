@@ -79,7 +79,7 @@ class Konohana(object):
 	@staticmethod
 	@dispatch_request
 	def create_node(**kwargs):
-		fields = ['alias', 'site_id', 'node_type']
+		fields = ['alias', 'site_id', 'node_type', 'latitude', 'longitude']
 		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
 		print node_fields
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
