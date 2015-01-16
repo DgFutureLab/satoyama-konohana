@@ -1,7 +1,7 @@
 satoyama-konohana
 =================
 
-Satoyama-konohana is a command line tool for easily managing satoyama-networks. With this tools you can create sites and nodes, link 
+Satoyama-konohana is a command line tool for easily managing satoyama-networks. In order to use this command line tool you need to have a  <a href="https://github.com/DgFutureLab/satoyama-api">satoyama-api</a> up and running. With these tools you can create sites and nodes.
 
 # Requirements
 1. Python 2.7
@@ -34,10 +34,22 @@ Get a list of all nodes in the database:
 Create a new site called 'mysite':
 
   `$ python konohana.py create_site --alias mysite`
-  
+
+Create new site specifying the host for satoyama-api:
+
+  `$ python konohana.py --host 128.199.191.249 --port 80 create_site --alias mysite`
+
 Create a new ricefield node at site 1:
 
-`$ python konohana.py create_node --node_type ricefield --site_id 1`
+`$ python konohana.py create_node --node_type ricefield --site_id 1 --alias kamogawa1`
+
+Create a new ricefield node at site 1 specifying the host for satoyama-api:
+
+`$ python konohana.py --host 128.199.191.249 --port 80 create_node --node_type ricefield --site_id 1`
+
+Create a new ricefield node at site 1 specifying the host for satoyama-api and the geolocation of the node:
+
+`$ python konohana.py --host 128.199.191.249 --port 80 create_node --latitude 35.144828 --longitude 139.962516 --node_type ricefield --site_id 1 --alias garden`
 
 Destroy site 1:
 
