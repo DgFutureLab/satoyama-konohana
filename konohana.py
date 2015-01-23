@@ -73,7 +73,7 @@ class Konohana(object):
 		r = requests.get(URL + 'nodes')
 		nodes = json.loads(r.text)['objects']
 		# pprint(nodes)
-		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s\n'%(n['id'], ['alias'], len(n['sensors'])), nodes))
+		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s\n'%(n['id'], n['alias'], len(n['sensors'])), nodes))
 
 	
 	@staticmethod
