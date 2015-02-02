@@ -63,9 +63,7 @@ class Konohana(object):
 	def sites(**kwargs):
 		r = requests.get(URL + 'sites')
 		sites = json.loads(r.text)['objects']
-		# pprint(sites)
 		pprint(map(lambda s: 'id: %s, alias: %s, nodes: %s\n'%(s['id'], s['alias'], len(s['nodes'])), sites))
-
 
 	@staticmethod
 	@dispatch_request
@@ -74,7 +72,6 @@ class Konohana(object):
 		nodes = json.loads(r.text)['objects']
 		# pprint(nodes)
 		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s\n'%(n['id'], ['alias'], len(n['sensors'])), nodes))
-
 	
 	@staticmethod
 	@dispatch_request
@@ -143,10 +140,6 @@ class Konohana(object):
 	def info(**kwargs):
 		raise Exception('Not implemented')
 
-
-
-
-
 if __name__ == "__main__":
 	parser = ArgumentParser()
 
@@ -174,6 +167,7 @@ if __name__ == "__main__":
 	parser_create_node.add_argument('--alias', type = str, required = False, help = 'The name of the node (e.g. "ricefield_small_waterlevel")')
 	parser_create_node.add_argument('--latitude', '-ltt', required = False, type = float, help = 'The latitude of the node')
 	parser_create_node.add_argument('--longitude', '-lgt', required = False, type = float, help = 'The latitude of the node')
+	parser_create_node.add_argument('--populate', '-pop', required = False, help = 'Populates the node with one week of sample data')
 
 	###
 	### Subparser for destroy node
@@ -188,6 +182,7 @@ if __name__ == "__main__":
 	parser_create_site = subparsers.add_parser('create_site', help='Create a new site')
 	parser_create_site.add_argument('--nodes', '-nn', type = str, required = False, help = 'Specify which and how many nodes the site should contain. For example, to create a site with 10 ricefield nodes and 5 herb nodes, use --nodes ricefield:10,herb:5')
 	parser_create_site.add_argument('--alias', type = str, required = False, help = 'The name of the site (e.g. "Hackerfarm")')
+
 	###
 	### Subparser for destroy site
 	###
