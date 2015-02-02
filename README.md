@@ -62,4 +62,4 @@ Destroy node 1:
 
 ## The MIT License (MIT)
 
-Satoyama Cloud is an open source framework to setup and manage sensor networks built by Future Lab & Hacker Farm.
+Satoyama Cloud is an open source framework to setup and manage sensor networks built by <a href="http://www.fljapan.com">Future Lab</a> & <a href="http://freaklabs.org/">Hacker Farm</a>.
