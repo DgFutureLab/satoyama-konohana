@@ -1,10 +1,11 @@
 satoyama-konohana
 =================
 
-Satoyama-konohana is a command line tool for easily managing satoyama-networks. In order to use this command line tool you need to have a  <a href="https://github.com/DgFutureLab/satoyama-api">satoyama-api</a> up and running. With these tools you can create sites and nodes.
+Satoyama-konohana is a command line tool for easily managing Satoyama Cloud sensor networks. In order to use this command line tool you need to have a  <a href="https://github.com/DgFutureLab/satoyama-api">satoyama-api</a> server up and running. With these tools you can create sites and nodes.
 
 # Requirements
 1. Python 2.7
+2. A python virtualenv
 
 # Installation
 1. Clone this repository
@@ -58,4 +59,7 @@ Destroy site 1:
 Destroy node 1:
 
   `$ python konohana.py destroy_node --id 1`
-  
+
+## The MIT License (MIT)
+
+Satoyama Cloud is an open source framework to setup and manage sensor networks built by Future Lab & Hacker Farm.
