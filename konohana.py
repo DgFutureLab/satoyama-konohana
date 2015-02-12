@@ -26,10 +26,16 @@ def dispatch_request(func):
 		except requests.ConnectionError:
 			logger.error('Could not connect to server')
 		except Exception, e:
+			print e
 			logger.error('Something went wrong!: %s, %s'%(e, type(e)))
 	return wrapper
 
+def debug(msg):
+	colored(msg, 'red')
+
 class Konohana(object):
+
+
 	@classmethod
 	def confirm_destroy(satoyama_type, mid, **kwargs):
 		invalid_choice = True
@@ -45,14 +51,18 @@ class Konohana(object):
 	
 	@staticmethod
 	def handle_response(response):
-		if not response.ok: 
-			logger.info('Failed to complete request. Got HTTP code: %s'%response.status)
-		else:
+		debug(response.status_code)
+		if response.ok: 
 			try:
 				return json.loads(response.text)
 			except Exception:
 				logger.exception('Could not parse the API response.')
-				return {}
+				return False
+		else:
+			logger.info(colored('Failed to complete request. Got HTTP code: %s'%response.status_code, 'red'))
+			return False
+
+			
 
 	@classmethod
 	def send_raw_input(**args):
@@ -80,24 +90,28 @@ class Konohana(object):
 		fields = ['alias', 'site_id', 'node_type', 'latitude', 'longitude']
 		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
-		if len(api_response.get('errors', [])) == 0: 
+		if api_response: 
 			logger.info(colored('Node created! Node data printed below.', 'green'))
 			logger.info(api_response['objects'])
 		else: 
 			logger.error(colored('Could not create node!', 'red'))
-			for e in api_response['errors']: logger.error('%s'%e)
+			if isinstance(api_response, dict):
+				for e in api_response['errors']: 
+					logger.error(colored('%s'%e, 'red'))
 		
 	@staticmethod
 	@dispatch_request
 	def destroy_node(**kwargs):
 		node_id = kwargs.get('id')
 		api_response = Konohana.handle_response(requests.delete(URL + 'node/%s'%node_id))
-		if len(api_response.get('errors', [])) == 0: 
+		if api_response: 
 			logger.info(colored('Node destroyed!', 'green'))
 			logger.info(api_response['objects'])
 		else: 
 			logger.error(colored('Could not destroy node!', 'red'))
-			for e in api_response['errors']: logger.error(e)
+			if isinstance(api_response, dict):
+				for e in api_response['errors']: 
+					logger.error(colored(e, 'red'))
 
 	@staticmethod
 	@dispatch_request
