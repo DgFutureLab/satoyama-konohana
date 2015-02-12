@@ -6,7 +6,7 @@ import os
 import sys
 from logging import Logger, Formatter, StreamHandler
 from logging.handlers import RotatingFileHandler
-
+from termcolor import colored
 logger = Logger(__name__)
 filehandler = RotatingFileHandler('konohana.log', maxBytes = 10**6)
 streamhandler = StreamHandler(sys.stdout)
@@ -79,13 +79,12 @@ class Konohana(object):
 	def create_node(**kwargs):
 		fields = ['alias', 'site_id', 'node_type', 'latitude', 'longitude']
 		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
-		print node_fields
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info('Node created! Node data printed below.')
+			logger.info(colored('Node created! Node data printed below.', 'green'))
 			logger.info(api_response['objects'])
 		else: 
-			logger.error('Could not create node!')
+			logger.error(colored('Could not create node!', 'red'))
 			for e in api_response['errors']: logger.error('%s'%e)
 		
 	@staticmethod
@@ -94,10 +93,10 @@ class Konohana(object):
 		node_id = kwargs.get('id')
 		api_response = Konohana.handle_response(requests.delete(URL + 'node/%s'%node_id))
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info('Node destroyed!')
+			logger.info(colored('Node destroyed!', 'green'))
 			logger.info(api_response['objects'])
 		else: 
-			logger.error('Could not destroy node!')
+			logger.error(colored('Could not destroy node!', 'red'))
 			for e in api_response['errors']: logger.error(e)
 
 	@staticmethod
@@ -113,7 +112,7 @@ class Konohana(object):
 		api_response = Konohana.handle_response(requests.post(URL + 'site', data = site_fields))
 
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info('Site created! Site data printed below.')
+			logger.info(colored('Site created! Site data printed below.', 'green'))
 			logger.info(api_response['objects'])
 			site_id = api_response['objects'][0]['id']
 		else: 
@@ -131,10 +130,10 @@ class Konohana(object):
 		site_id = kwargs.get('id')
 		api_response = Konohana.handle_response(requests.delete(URL + 'site/%s'%site_id))
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info('Site destroyed!')
+			logger.info(colored('Site destroyed!', 'green'))
 			logger.info(api_response['objects'])
 		else: 
-			logger.error('Could not destroy site!')
+			logger.error(colored('Could not destroy site!', 'red'))
 			for e in api_response['errors']: logger.error(e)
 
 	@staticmethod
