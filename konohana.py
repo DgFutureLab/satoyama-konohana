@@ -63,7 +63,7 @@ class Konohana(object):
 	def sites(**kwargs):
 		r = requests.get(URL + 'sites')
 		sites = json.loads(r.text)['objects']
-		pprint(map(lambda s: 'id: %s, alias: %s, nodes: %s\n'%(s['id'], s['alias'], len(s['nodes'])), sites))
+		pprint(map(lambda s: 'id: %s, alias: %s, nodes: %s'%(s['id'], s['alias'], len(s['nodes'])), sites))
 
 	@staticmethod
 	@dispatch_request
@@ -71,12 +71,8 @@ class Konohana(object):
 		r = requests.get(URL + 'nodes')
 		nodes = json.loads(r.text)['objects']
 		# pprint(nodes)
-<<<<<<< HEAD
-		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s\n'%(n['id'], n['alias'], len(n['sensors'])), nodes))
+		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s'%(n['id'], n['alias'], len(n['sensors'])), nodes))
 
-=======
-		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s\n'%(n['id'], ['alias'], len(n['sensors'])), nodes))
->>>>>>> cadaa42f196f77b4f595b4a44bced1b01f7aa27e
 	
 	@staticmethod
 	@dispatch_request
@@ -86,7 +82,7 @@ class Konohana(object):
 		print node_fields
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info('Node created!')
+			logger.info('Node created! Node data printed below.')
 			logger.info(api_response['objects'])
 		else: 
 			logger.error('Could not create node!')
@@ -117,7 +113,7 @@ class Konohana(object):
 		api_response = Konohana.handle_response(requests.post(URL + 'site', data = site_fields))
 
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info('Site created!')
+			logger.info('Site created! Site data printed below.')
 			logger.info(api_response['objects'])
 			site_id = api_response['objects'][0]['id']
 		else: 
@@ -152,8 +148,8 @@ if __name__ == "__main__":
 	### Main parser
 	###
 	parser.add_argument('-y', action='store_true', help='If specified, Konohana will not ask for confirmation when destroying Satoyama entities.')
-	parser.add_argument('--host', default = '127.0.0.1', help = 'Server IP address e.g., 107.170.251.142')
-	parser.add_argument('--port', type = int, default = 8080, help = 'Port on the server (usually 80)')
+	parser.add_argument('--host', default = 'satoyamacloud.com', help = 'Server hostname or IP address e.g., 107.170.251.142')
+	parser.add_argument('--port', type = int, default = 80, help = 'Port on the server (usually 80)')
 	subparsers = parser.add_subparsers(help='sub-command help', dest = 'action')
 
 	
@@ -205,8 +201,8 @@ if __name__ == "__main__":
 		print "Please specify a port with an integer"
 		os._exit(1)
 
-	URL = 'http://%s:%s/'%(HOST, PORT)
-
+	URL = 'http://%s:%s/'%(HOST.strip('http://'), PORT)
+	print URL
 	# print vars(args)
 	getattr(Konohana, args.action)(**vars(args))
 
