@@ -18,6 +18,7 @@ logger.addHandler(streamhandler)
 
 NODE_TYPES = ['ricefield', 'herbs', 'empty']
 
+
 def dispatch_request(func):
 	def wrapper(**kwargs):
 		try:
@@ -37,12 +38,12 @@ class Konohana(object):
 
 
 	@classmethod
-	def confirm_destroy(satoyama_type, mid, **kwargs):
+	def confirm_destroy(satoyama_type, model_id, **kwargs):
 		invalid_choice = True
 		while invalid_choice:
-			choice = raw_input('Are you sure that you want to destroy %s %s and all data it owns? [Y/n]? '%(satoyama_type, mid))
+			choice = raw_input('Are you sure that you want to destroy %s %s and all data it owns? [Y/n]? '%(satoyama_type, model_id))
 			if choice in ['Y', 'y', 'Yes', 'yes']:
-				print 'Destroyed %s %s'%(satoyama_type, mid)
+				print 'Destroyed %s %s'%(satoyama_type, model_id)
 				return True
 			elif choice in ['n', 'N', 'no', 'No']:
 				return False
@@ -103,6 +104,7 @@ class Konohana(object):
 	@dispatch_request
 	def destroy_node(**kwargs):
 		node_id = kwargs.get('id')
+		# Konohana.confirm_destroy()
 		api_response = Konohana.handle_response(requests.delete(URL + 'node/%s'%node_id))
 		if api_response: 
 			logger.info(colored('Node destroyed!', 'green'))
@@ -126,11 +128,16 @@ class Konohana(object):
 		api_response = Konohana.handle_response(requests.post(URL + 'site', data = site_fields))
 
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info(colored('Site created! Site data printed below.', 'green'))
-			logger.info(api_response['objects'])
-			site_id = api_response['objects'][0]['id']
+			try:
+				site_id = api_response['objects'][0]['id']
+				logger.info(colored('Site created! Site data printed below.', 'green'))
+				logger.info(api_response['objects'])
+			except Exception:
+				site_id = None
+				logger.error(colored('Could not create site!', 'red'))
+			
 		else: 
-			logger.error('Could not create site!')
+			logger.error(colored('Could not create site!', 'red'))
 			for e in api_response['errors']: logger.error('%s'%e)
 			site_id = None
 		
