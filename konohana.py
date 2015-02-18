@@ -37,16 +37,15 @@ def debug(msg):
 class Konohana(object):
 
 
-	@classmethod
+	@staticmethod
 	def confirm_destroy(satoyama_type, model_id, **kwargs):
 		invalid_choice = True
 		while invalid_choice:
 			choice = raw_input('Are you sure that you want to destroy %s %s and all data it owns? [Y/n]? '%(satoyama_type, model_id))
 			if choice in ['Y', 'y', 'Yes', 'yes']:
 				print 'Destroyed %s %s'%(satoyama_type, model_id)
-				return True
 			elif choice in ['n', 'N', 'no', 'No']:
-				return False
+				os._exit(0)
 			else:
 				print 'Please choose yes or no :)'
 	
@@ -104,7 +103,7 @@ class Konohana(object):
 	@dispatch_request
 	def destroy_node(**kwargs):
 		node_id = kwargs.get('id')
-		# Konohana.confirm_destroy()
+		Konohana.confirm_destroy('node', node_id)
 		api_response = Konohana.handle_response(requests.delete(URL + 'node/%s'%node_id))
 		if api_response: 
 			logger.info(colored('Node destroyed!', 'green'))
@@ -149,6 +148,7 @@ class Konohana(object):
 	@staticmethod
 	def destroy_site(**kwargs):
 		site_id = kwargs.get('id')
+		Konohana.confirm_destroy('site', site_id)
 		api_response = Konohana.handle_response(requests.delete(URL + 'site/%s'%site_id))
 		if len(api_response.get('errors', [])) == 0: 
 			logger.info(colored('Site destroyed!', 'green'))
@@ -222,7 +222,7 @@ if __name__ == "__main__":
 		os._exit(1)
 
 	URL = 'http://%s:%s/'%(HOST.strip('http://'), PORT)
-	print URL
+	# print URL
 	# print vars(args)
 	getattr(Konohana, args.action)(**vars(args))
 
