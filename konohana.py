@@ -77,7 +77,7 @@ class Konohana(object):
 	@staticmethod
 	@dispatch_request
 	def create_node(**kwargs):
-		fields = ['alias', 'site_id', 'node_type', 'latitude', 'longitude']
+		fields = ['alias', 'site_id', 'node_type', 'latitude', 'longitude', 'populate']
 		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
 		if len(api_response.get('errors', [])) == 0: 
@@ -108,7 +108,9 @@ class Konohana(object):
 			nodes = kwargs['nodes']
 			l = [z.split(':') for z in nodes.split(',')]
 			node_dict = dict(zip([x[0] for x in l], [x[1] for x in l]))
-		
+		# response = requests.post(URL + 'site', data = site_fields)
+		# print response.text
+
 		api_response = Konohana.handle_response(requests.post(URL + 'site', data = site_fields))
 
 		if len(api_response.get('errors', [])) == 0: 
@@ -167,7 +169,7 @@ if __name__ == "__main__":
 	parser_create_node.add_argument('--alias', type = str, required = False, help = 'The name of the node (e.g. "ricefield_small_waterlevel")')
 	parser_create_node.add_argument('--latitude', '-ltt', required = False, type = float, help = 'The latitude of the node')
 	parser_create_node.add_argument('--longitude', '-lgt', required = False, type = float, help = 'The latitude of the node')
-	parser_create_node.add_argument('--populate', '-pop', required = False, help = 'Populates the node with one week of sample data')
+	parser_create_node.add_argument('--populate', '-pop', required = False, type = int, help = 'Populates the node with one week of sample data')
 
 	###
 	### Subparser for destroy node
