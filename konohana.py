@@ -18,6 +18,7 @@ logger.addHandler(streamhandler)
 
 NODE_TYPES = ['ricefield', 'herbs', 'empty']
 
+
 def dispatch_request(func):
 	def wrapper(**kwargs):
 		try:
@@ -26,33 +27,42 @@ def dispatch_request(func):
 		except requests.ConnectionError:
 			logger.error('Could not connect to server')
 		except Exception, e:
+			print e
 			logger.error('Something went wrong!: %s, %s'%(e, type(e)))
 	return wrapper
 
+def debug(msg):
+	colored(msg, 'red')
+
 class Konohana(object):
-	@classmethod
-	def confirm_destroy(satoyama_type, mid, **kwargs):
+
+
+	@staticmethod
+	def confirm_destroy(satoyama_type, model_id, **kwargs):
 		invalid_choice = True
 		while invalid_choice:
-			choice = raw_input('Are you sure that you want to destroy %s %s and all data it owns? [Y/n]? '%(satoyama_type, mid))
+			choice = raw_input('Are you sure that you want to destroy %s %s and all data it owns? [Y/n]? '%(satoyama_type, model_id))
 			if choice in ['Y', 'y', 'Yes', 'yes']:
-				print 'Destroyed %s %s'%(satoyama_type, mid)
-				return True
+				print 'Destroyed %s %s'%(satoyama_type, model_id)
 			elif choice in ['n', 'N', 'no', 'No']:
-				return False
+				os._exit(0)
 			else:
 				print 'Please choose yes or no :)'
 	
 	@staticmethod
 	def handle_response(response):
-		if not response.ok: 
-			logger.info('Failed to complete request. Got HTTP code: %s'%response.status)
-		else:
+		debug(response.status_code)
+		if response.ok: 
 			try:
 				return json.loads(response.text)
 			except Exception:
 				logger.exception('Could not parse the API response.')
-				return {}
+				return False
+		else:
+			logger.info(colored('Failed to complete request. Got HTTP code: %s'%response.status_code, 'red'))
+			return False
+
+			
 
 	@classmethod
 	def send_raw_input(**args):
@@ -80,24 +90,29 @@ class Konohana(object):
 		fields = ['alias', 'site_id', 'node_type', 'latitude', 'longitude', 'populate']
 		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
-		if len(api_response.get('errors', [])) == 0: 
+		if api_response: 
 			logger.info(colored('Node created! Node data printed below.', 'green'))
 			logger.info(api_response['objects'])
 		else: 
 			logger.error(colored('Could not create node!', 'red'))
-			for e in api_response['errors']: logger.error('%s'%e)
+			if isinstance(api_response, dict):
+				for e in api_response['errors']: 
+					logger.error(colored('%s'%e, 'red'))
 		
 	@staticmethod
 	@dispatch_request
 	def destroy_node(**kwargs):
 		node_id = kwargs.get('id')
+		Konohana.confirm_destroy('node', node_id)
 		api_response = Konohana.handle_response(requests.delete(URL + 'node/%s'%node_id))
-		if len(api_response.get('errors', [])) == 0: 
+		if api_response: 
 			logger.info(colored('Node destroyed!', 'green'))
 			logger.info(api_response['objects'])
 		else: 
 			logger.error(colored('Could not destroy node!', 'red'))
-			for e in api_response['errors']: logger.error(e)
+			if isinstance(api_response, dict):
+				for e in api_response['errors']: 
+					logger.error(colored(e, 'red'))
 
 	@staticmethod
 	@dispatch_request
@@ -114,11 +129,16 @@ class Konohana(object):
 		api_response = Konohana.handle_response(requests.post(URL + 'site', data = site_fields))
 
 		if len(api_response.get('errors', [])) == 0: 
-			logger.info(colored('Site created! Site data printed below.', 'green'))
-			logger.info(api_response['objects'])
-			site_id = api_response['objects'][0]['id']
+			try:
+				site_id = api_response['objects'][0]['id']
+				logger.info(colored('Site created! Site data printed below.', 'green'))
+				logger.info(api_response['objects'])
+			except Exception:
+				site_id = None
+				logger.error(colored('Could not create site!', 'red'))
+			
 		else: 
-			logger.error('Could not create site!')
+			logger.error(colored('Could not create site!', 'red'))
 			for e in api_response['errors']: logger.error('%s'%e)
 			site_id = None
 		
@@ -130,6 +150,7 @@ class Konohana(object):
 	@staticmethod
 	def destroy_site(**kwargs):
 		site_id = kwargs.get('id')
+		Konohana.confirm_destroy('site', site_id)
 		api_response = Konohana.handle_response(requests.delete(URL + 'site/%s'%site_id))
 		if len(api_response.get('errors', [])) == 0: 
 			logger.info(colored('Site destroyed!', 'green'))
@@ -203,7 +224,7 @@ if __name__ == "__main__":
 		os._exit(1)
 
 	URL = 'http://%s:%s/'%(HOST.strip('http://'), PORT)
-	print URL
+	# print URL
 	# print vars(args)
 	getattr(Konohana, args.action)(**vars(args))
 
