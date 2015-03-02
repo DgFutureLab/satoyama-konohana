@@ -52,6 +52,10 @@ Create a new ricefield node at site 1 specifying the host for satoyama-api and t
 
 `$ python konohana.py --host 128.199.191.249 --port 80 create_node --latitude 35.144828 --longitude 139.962516 --node_type ricefield --site_id 1 --alias garden`
 
+Create a new ricefield node at site 1 specifying the host for satoyama-api and add dummy readings data(set the number of dummy readings data after --populate):
+`$ python konohana.py --host 128.199.191.249 --port 80 create_node --node_type ricefield --site_id 1 --populate 42`
+
+
 Destroy site 1:
 
   `$ python konohana.py destroy_site --id 1`
