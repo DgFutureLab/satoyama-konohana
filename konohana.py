@@ -44,6 +44,7 @@ class Konohana(object):
 			choice = raw_input('Are you sure that you want to destroy %s %s and all data it owns? [Y/n]? '%(satoyama_type, model_id))
 			if choice in ['Y', 'y', 'Yes', 'yes']:
 				print 'Destroyed %s %s'%(satoyama_type, model_id)
+				break
 			elif choice in ['n', 'N', 'no', 'No']:
 				os._exit(0)
 			else:
