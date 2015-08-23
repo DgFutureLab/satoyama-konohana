@@ -16,8 +16,6 @@ streamhandler.setFormatter(formatter)
 logger.addHandler(filehandler)
 logger.addHandler(streamhandler)
 
-# NODE_TYPES = ['edge', 'ricefield', 'empty']
-
 
 def dispatch_request(func):
 	def wrapper(**kwargs):
@@ -102,7 +100,7 @@ class Konohana(object):
 		api_response = Konohana.handle_response(requests.post(URL + 'node', data = node_fields))
 		if api_response: 
 			logger.info(colored('Node created! Node data printed below.', 'green'))
-			logger.info(api_response['objects'])
+			pprint(api_response['objects'])
 		else: 
 			logger.error(colored('Could not create node!', 'red'))
 			if isinstance(api_response, dict):
@@ -238,12 +236,7 @@ if __name__ == "__main__":
 
 	URL = 'http://%s:%s/'%(HOST.strip('http://'), PORT)
 
-	# NODE_TYPES = json.loads(requests.get(URL + 'nodetypes').text)['objects'][0].keys()
-	# print NODE_TYPES
-	# print URL
-	# print URL
-	# print vars(args)
 	getattr(Konohana, args.action)(**vars(args))
 
-	# print action, model
+
 	
