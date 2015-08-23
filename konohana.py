@@ -16,7 +16,7 @@ streamhandler.setFormatter(formatter)
 logger.addHandler(filehandler)
 logger.addHandler(streamhandler)
 
-NODE_TYPES = ['edge', 'ricefield', 'empty']
+# NODE_TYPES = ['edge', 'ricefield', 'empty']
 
 
 def dispatch_request(func):
@@ -84,6 +84,15 @@ class Konohana(object):
 		# pprint(nodes)
 		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s'%(n['id'], n['alias'], len(n['sensors'])), nodes))
 
+	@staticmethod
+	@dispatch_request
+	def nodetypes(**kwargs):
+		r = requests.get(URL + 'nodetypes')
+		nodetypes = json.loads(r.text)['objects'][0]
+		if kwargs['verbose']:
+			pprint(nodetypes)
+		else:	
+			pprint(nodetypes.keys())
 	
 	@staticmethod
 	@dispatch_request
@@ -179,14 +188,17 @@ if __name__ == "__main__":
 	###
 	### Subparser for listing sites and nodes
 	###
-	parser_create_node = subparsers.add_parser('sites', help='Get a list of the ids of all existing sites')
-	parser_create_node = subparsers.add_parser('nodes', help='Get a list of the ids of all existing nodes')
+	subparsers.add_parser('sites', help='Get a list of the ids of all existing sites')
+	subparsers.add_parser('nodes', help='Get a list of the ids of all existing nodes')
+	
+	nt_parser = subparsers.add_parser('nodetypes', help='Get a list of the ids of all existing node types')
+	nt_parser.add_argument('--verbose', '-v', action = 'store_true')
 	
 	###
 	### Subparser for create node
 	###
 	parser_create_node = subparsers.add_parser('create_node', help='Create a site or node')
-	parser_create_node.add_argument('--node_type', '-nt', choices = NODE_TYPES, required = True)
+	parser_create_node.add_argument('--node_type', '-nt', required = True, help='To know which node types are available, use konohana nodetypes command')
 	parser_create_node.add_argument('--site_id', '-s', type = int, required = True, help = 'The id of the site that the node belongs to')
 	parser_create_node.add_argument('--alias', type = str, required = False, help = 'The name of the node (e.g. "ricefield_small_waterlevel")')
 	parser_create_node.add_argument('--latitude', '-ltt', required = False, type = float, help = 'The latitude of the node')
@@ -225,6 +237,10 @@ if __name__ == "__main__":
 		os._exit(1)
 
 	URL = 'http://%s:%s/'%(HOST.strip('http://'), PORT)
+
+	# NODE_TYPES = json.loads(requests.get(URL + 'nodetypes').text)['objects'][0].keys()
+	# print NODE_TYPES
+	# print URL
 	# print URL
 	# print vars(args)
 	getattr(Konohana, args.action)(**vars(args))
