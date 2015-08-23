@@ -84,6 +84,19 @@ class Konohana(object):
 
 	@staticmethod
 	@dispatch_request
+	def node(**kwargs):
+		r = requests.get(URL + 'node/' + str(kwargs['id']))
+		pprint(json.loads(r.text)['objects'])
+
+	@staticmethod
+	@dispatch_request
+	def site(**kwargs):
+		r = requests.get(URL + 'site/' + str(kwargs['id']))
+		pprint(json.loads(r.text)['objects'])
+
+
+	@staticmethod
+	@dispatch_request
 	def nodetypes(**kwargs):
 		r = requests.get(URL + 'nodetypes')
 		nodetypes = json.loads(r.text)['objects'][0]
@@ -188,9 +201,15 @@ if __name__ == "__main__":
 	###
 	subparsers.add_parser('sites', help='Get a list of the ids of all existing sites')
 	subparsers.add_parser('nodes', help='Get a list of the ids of all existing nodes')
+
+	node_parser = subparsers.add_parser('node', help='Get verbose information about a single node')
+	node_parser.add_argument('--id', required = True, type = int)
 	
-	nt_parser = subparsers.add_parser('nodetypes', help='Get a list of the ids of all existing node types')
-	nt_parser.add_argument('--verbose', '-v', action = 'store_true')
+	nodetype_parser = subparsers.add_parser('nodetypes', help='Get a list of the ids of all existing node types')
+	nodetype_parser.add_argument('--verbose', '-v', action = 'store_true')
+
+	site_parser = subparsers.add_parser('site', help='Get verbose information about a single site')
+	site_parser.add_argument('--id', required = True, type = int)
 	
 	###
 	### Subparser for create node
