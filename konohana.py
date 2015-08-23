@@ -16,7 +16,7 @@ streamhandler.setFormatter(formatter)
 logger.addHandler(filehandler)
 logger.addHandler(streamhandler)
 
-NODE_TYPES = ['ricefield', 'herbs', 'empty']
+NODE_TYPES = ['edge', 'ricefield', 'empty']
 
 
 def dispatch_request(func):
