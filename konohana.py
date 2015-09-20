@@ -77,7 +77,9 @@ class Konohana(object):
 	@staticmethod
 	@dispatch_request
 	def nodes(**kwargs):
-		r = requests.get(URL + 'nodes')
+		fields = ['site_id']
+		node_fields = dict(zip(fields, map(lambda k: kwargs.get(k, None), fields)))
+		r = requests.get(URL + 'nodes', data = node_fields)
 		nodes = json.loads(r.text)['objects']
 		# pprint(nodes)
 		pprint(map(lambda n: 'id: %s, alias: %s, sensors: %s'%(n['id'], n['alias'], len(n['sensors'])), nodes))
@@ -200,7 +202,8 @@ if __name__ == "__main__":
 	### Subparser for listing sites and nodes
 	###
 	subparsers.add_parser('sites', help='Get a list of the ids of all existing sites')
-	subparsers.add_parser('nodes', help='Get a list of the ids of all existing nodes')
+	nodes_parser = subparsers.add_parser('nodes', help='Get a list of the ids of all existing nodes')
+	nodes_parser.add_argument('--site_id', '-s', required = False, type = int, help = 'Get all nodes belonging to this site.')
 
 	node_parser = subparsers.add_parser('node', help='Get verbose information about a single node')
 	node_parser.add_argument('--id', required = True, type = int)
@@ -254,6 +257,8 @@ if __name__ == "__main__":
 		os._exit(1)
 
 	URL = 'http://%s:%s/'%(HOST.strip('http://'), PORT)
+
+	print URL 
 
 	getattr(Konohana, args.action)(**vars(args))
 
